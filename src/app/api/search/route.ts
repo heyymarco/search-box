@@ -64,3 +64,6 @@ router
     }
     return NextResponse.json(searchResult); // handled with success
 });
+
+
+export const revalidate = 0;
