@@ -14,9 +14,10 @@ export const apiSlice = createApi({
     }),
     endpoints : (builder) => ({
         getSearch : builder.mutation<SearchResult, { search: string, option: string }>({
-            query : ({search, option}) => ({
-                url    : `search?search=${encodeURIComponent(search)}&option=${encodeURIComponent(option)}`,
+            query : (data) => ({
+                url    : 'search',
                 method : 'POST',
+                body   : data,
             }),
         }),
     }),
