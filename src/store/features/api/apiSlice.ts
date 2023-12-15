@@ -16,7 +16,7 @@ export const apiSlice = createApi({
         getSearch : builder.mutation<SearchResult, { search: string, option: string }>({
             query : ({search, option}) => ({
                 url    : `search?search=${encodeURIComponent(search)}&option=${encodeURIComponent(option)}`,
-                method : 'GET',
+                method : 'POST',
             }),
         }),
     }),

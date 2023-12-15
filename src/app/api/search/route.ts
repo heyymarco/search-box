@@ -43,7 +43,7 @@ export {
 }
 
 router
-.get(async (req) => {
+.post(async (req) => {
     // simulate slow network:
     await new Promise<void>((resolve) => {
         setTimeout(() => {
