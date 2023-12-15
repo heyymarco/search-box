@@ -10,20 +10,19 @@ import {
 
 import styles from './page.module.css'
 import { SearchBox, SearchBoxSubmitEventHandler } from '@/components/SearchBox'
+import { useGetSearch } from '@/store/features/api/apiSlice'
+import { Basic, Busy, List, ListItem } from '@reusable-ui/components'
 
 
 
 export default function Home() {
+    const [doSearch, {data: searchResults, isLoading, isError}] = useGetSearch();
+    const isReady = !isLoading && !isError && !!searchResults;
+    
+    
+    
     const handleSubmit = useEvent<SearchBoxSubmitEventHandler>(async ({search, option}): Promise<void> => {
-        await new Promise<void>((resolved) => {
-            setTimeout(() => {
-                resolved();
-            }, 1000);
-        });
-        
-        
-        
-        console.log({search, option});
+        doSearch({search, option});
     });
     
     
@@ -50,6 +49,20 @@ export default function Home() {
                 // handlers:
                 onSubmit={handleSubmit}
             />
+            
+            {isError && <Basic theme='danger'>
+                Oops, something wrong!
+            </Basic>}
+            
+            {isLoading && <Busy theme='primary' size='lg' />}
+            
+            {isReady && <List theme='primary'>
+                {searchResults.results.map((result, index) =>
+                    <ListItem key={index}>
+                        {result}
+                    </ListItem>
+                )}
+            </List>}
         </main>
     )
 }
