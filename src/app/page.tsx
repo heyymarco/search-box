@@ -9,7 +9,7 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 import styles from './page.module.css'
-import { SearchBox, SearchBoxSubmitEventHandler } from '@/components/SearchBox'
+import { SearchBox, SearchBoxSubmitEventHandler } from 'search-box-2'
 import { useGetSearch } from '@/store/features/api/apiSlice'
 import { Basic, Busy, List, ListItem } from '@reusable-ui/components'
 
