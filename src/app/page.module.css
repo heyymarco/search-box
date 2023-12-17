@@ -1,9 +1,9 @@
 .main {
   display: grid;
   gap: 2rem;
-  justify-items: center;
+  justify-items: stretch;
   align-content: start;
-  justify-content: center;
+  justify-content: stretch;
   padding: 5rem;
   background: url('/soft-rainbow.svg');
 }

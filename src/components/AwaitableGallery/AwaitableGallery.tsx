@@ -9,30 +9,19 @@ import {
     
     // hooks:
     useState,
-    useRef,
     useEffect,
 }                           from 'react'
-
-// reusable-ui core:
-import {
-    // react helper hooks:
-    useEvent,
-    
-    
-    
-    // an accessibility management system:
-    AccessibilityProvider,
-    
-    
-    
-    // basic variants of UI:
-    useBasicVariantProps,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-components:
     Basic,
+    
+    
+    
+    // base-content-components:
+    ContentProps,
+    Content,
     
     
     
@@ -42,9 +31,13 @@ import {
     
     
     // composite-components:
-    MasonryProps,
     Masonry,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internals:
+import {
+    useAwaitableGalleryStyleSheet,
+}                           from './styles/loader'
 
 
 
@@ -53,7 +46,7 @@ export type CheckStatusCallback = (searchId: string) => Promise<string[]|'pendin
 export interface AwaitableGalleryProps
     extends
         // bases:
-        Omit<MasonryProps, 'children'>
+        Omit<ContentProps, 'children'>
 {
     // values:
     searchId ?: string|null
@@ -64,6 +57,11 @@ export interface AwaitableGalleryProps
     checkStatusApi ?: CheckStatusCallback
 }
 export const AwaitableGallery = (props: AwaitableGalleryProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useAwaitableGalleryStyleSheet();
+    
+    
+    
     // rest props:
     const {
         // values:
@@ -73,7 +71,7 @@ export const AwaitableGallery = (props: AwaitableGalleryProps): JSX.Element|null
         
         // apis:
         checkStatusApi,
-    ...restMasonryProps} = props;
+    ...restContentProps} = props;
     
     
     
@@ -120,23 +118,39 @@ export const AwaitableGallery = (props: AwaitableGalleryProps): JSX.Element|null
     
     
     // jsx:
-    if (images instanceof Error) return (
-        <Basic theme='danger'>
-            Oops! An error occured.
-        </Basic>
-    );
-    if (images === 'pending') return (
-        <Busy theme='primary' size='lg' />
-    );
-    if (images === 'idle') return null;
+    if (searchId === undefined) return null;
     return (
-        <Masonry
+        <Content
             // other props:
-            {...restMasonryProps}
+            {...restContentProps}
+            
+            
+            
+            // variants:
+            theme={(images instanceof Error) ? 'danger' : props.theme}
+            
+            
+            
+            // classes:
+            mainClass={props.mainClass ?? styleSheet.main}
         >
-            {images.map((image, index) =>
-                <img key={index} src={image} alt='' />
-            )}
-        </Masonry>
+            {(images instanceof Error) &&
+                <Basic className='error' theme='danger'>
+                    Oops! An error occured.
+                </Basic>
+            }
+            
+            {(images === 'pending') &&
+                <Busy className='busy' theme='primary' size='lg' />
+            }
+            
+            {Array.isArray(images) &&
+                <Masonry className='images' nude={true}>
+                    {images.map((image, index) =>
+                        <img key={index} src={image} alt='' />
+                    )}
+                </Masonry>
+            }
+        </Content>
     );
 };

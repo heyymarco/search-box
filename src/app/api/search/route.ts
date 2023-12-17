@@ -132,7 +132,7 @@ router
     
     const createdResult : CreatedResult = {
         imageUrls : (
-            new Array(Math.round(Math.random() * 10) + 6)
+            new Array(Math.round(Math.random() * 10) + 10)
             .fill(null)
             .map(() =>
                 images[Math.round(Math.random() * (images.length - 1))]
