@@ -24,6 +24,13 @@ export default function Home() {
     
     
     const handleSubmit = useEvent<SearchBoxSubmitEventHandler>(async ({search, option}): Promise<void> => {
+        if (!search) {
+            setSearchId(undefined); // undefined => not yet searched
+            return;
+        } // if
+        
+        
+        
         setSearchId(null); // null => waiting for server response
         try {
             const result = await doSearch({search: search ?? '', option}).unwrap();
