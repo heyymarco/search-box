@@ -23,6 +23,7 @@ export default function Home() {
     
     
     
+    // handlers:
     const handleSubmit = useEvent<SearchBoxSubmitEventHandler>(async ({search, option}): Promise<void> => {
         if (!search) {
             setSearchId(undefined); // undefined => not yet searched
@@ -51,7 +52,7 @@ export default function Home() {
     
     
     
-    // handlers:
+    // jsx:
     return (
         <main className={styles.main}>
             <SearchBox
