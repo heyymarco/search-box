@@ -9,19 +9,45 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
+// others:
+import {
+    customAlphabet,
+}                           from 'nanoid'
+
 
 
 // types:
-export interface SearchResult
+export interface GenerateRequest
 {
-    results: string[]
+    search : string
+    option : string
+}
+export interface GenerateResult
+{
+    sessionId: string
+}
+
+export interface VerifyRequest
+{
+    sessionId: string
+}
+export interface CreatedResult
+{
+    imageUrls: string[]
 }
 
 
 // mocks:
-const words =
-    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus assumenda dolorum distinctio placeat consequatur, dolor autem, iusto sit, repellendus magni molestias corrupti? Recusandae facere blanditiis veniam? Quas voluptatem quibusdam voluptas!'
-    .split(/\s+/g);
+const sessions = new Map<string, Date>();
+const images = [
+    '/lorem-img/building-800x500.jpg',
+    '/lorem-img/flower-700x400.jpg',
+    '/lorem-img/leaf-800x700.jpg',
+    '/lorem-img/street-800x800.jpg',
+    '/lorem-img/water-500x800.jpg',
+    '/lorem-img/waves-800x600.jpg',
+    '/lorem-img/wood-700x600.jpg',
+];
 
 
 
@@ -37,7 +63,7 @@ export {
     // handler as GET,
     handler as POST,
     // handler as PUT,
-    // handler as PATCH,
+    handler as PATCH,
     // handler as DELETE,
     // handler as HEAD,
 }
@@ -53,16 +79,67 @@ router
     
     
     
-    const searchResult : SearchResult = {
-        results : (
-            new Array(Math.round(Math.random() * 10) + 3)
+    const {
+        search,
+        option,
+    } = await req.json();
+    
+    
+    
+    const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+    const newSessionId = nanoid();
+    const createdAt = new Date();
+    sessions.set(newSessionId, createdAt);
+    const generateResult : GenerateResult = {
+        sessionId : newSessionId
+    }
+    return NextResponse.json(generateResult); // handled with success
+})
+.patch(async (req) => {
+    // simulate slow network:
+    await new Promise<void>((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, 1000);
+    });
+    
+    
+    
+    const {
+        sessionId,
+    } = await req.json();
+    if (!sessionId || (typeof sessionId !== 'string')) {
+        return NextResponse.json({
+            error: 'Invalid parameter(s).',
+        }, { status: 400 }); // bad request
+    } // if
+    const createdAt = sessions.get(sessionId);
+    if (!createdAt) {
+        return NextResponse.json({
+            error: 'Invalid parameter(s).',
+        }, { status: 400 }); // bad request
+    } // if
+    
+    
+    
+    if ((createdAt.valueOf() + (10 * 1000)) > (new Date()).valueOf()) {
+        return NextResponse.json({
+            result: 'queued',
+        }, { status: 409 }); // queued
+    } // if
+    
+    
+    
+    const createdResult : CreatedResult = {
+        imageUrls : (
+            new Array(Math.round(Math.random() * 10) + 6)
             .fill(null)
             .map(() =>
-                words[Math.round(Math.random() * (words.length - 1))]
+                images[Math.round(Math.random() * (images.length - 1))]
             )
         ),
     }
-    return NextResponse.json(searchResult); // handled with success
+    return NextResponse.json(createdResult); // handled with success
 });
 
 

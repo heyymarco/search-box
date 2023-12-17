@@ -2,7 +2,11 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 // apis:
 import type {
-    SearchResult,
+    GenerateRequest,
+    GenerateResult,
+    
+    VerifyRequest,
+    CreatedResult,
 }                           from '@/app/api/search/route'
 
 
@@ -13,10 +17,17 @@ export const apiSlice = createApi({
         baseUrl: `${process.env.WEBSITE_URL ?? ''}/api`
     }),
     endpoints : (builder) => ({
-        getSearch : builder.mutation<SearchResult, { search: string, option: string }>({
+        generateSearch : builder.mutation<GenerateResult, GenerateRequest>({
             query : (data) => ({
                 url    : 'search',
                 method : 'POST',
+                body   : data,
+            }),
+        }),
+        verifySearch : builder.mutation<CreatedResult, VerifyRequest>({
+            query : (data) => ({
+                url    : 'search',
+                method : 'PATCH',
                 body   : data,
             }),
         }),
@@ -26,5 +37,6 @@ export const apiSlice = createApi({
 
 
 export const {
-    useGetSearchMutation : useGetSearch,
+    useGenerateSearchMutation : useGenerateSearch,
+    useVerifySearchMutation   : useVerifySearch,
 } = apiSlice;

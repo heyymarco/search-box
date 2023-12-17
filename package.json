@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "@reusable-ui/components": "^6.5.2",
     "@reusable-ui/core": "^6.5.0",
+    "nanoid": "^5.0.4",
     "next": "14.0.4",
     "next-connect": "^1.0.0",
     "react": "^18",
