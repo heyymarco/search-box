@@ -12,48 +12,35 @@ import styles from './page.module.css'
 import { SearchBox, SearchBoxSubmitEventHandler } from 'search-box-2'
 import { useGenerateSearch, useVerifySearch } from '@/store/features/api/apiSlice'
 import { Basic, Busy, List, ListItem, Masonry } from '@reusable-ui/components'
+import { AwaitableGallery, CheckStatusCallback } from '@/components/AwaitableGallery'
 
 
 
 export default function Home() {
-    const [doSearch, {data: generateResult, isLoading: isGenerateLoading, isError: isGenerateError}] = useGenerateSearch();
-    const [doVerify, {data: imageResults  , isLoading: isImageLoading   , error  : isImageError   }] = useVerifySearch();
-    const [isPending, setIsPending] = useState<boolean>(false);
-    const isLoading = isGenerateLoading || isImageLoading || isPending;
-    const isError   = isGenerateError   || (!!isImageError && ((isImageError as any).status !== 409 /* still queued */));
-    const isReady   = !isLoading && !isError && !!imageResults;
+    const [doSearch, {data: generateResult}] = useGenerateSearch();
+    const [doVerify] = useVerifySearch();
+    const [searchId, setSearchId] = useState<string|null|undefined>(undefined); // undefined => not yet searched, null => waiting for server response
     
     
     
     const handleSubmit = useEvent<SearchBoxSubmitEventHandler>(async ({search, option}): Promise<void> => {
-        setIsPending(true);
-        doSearch({search, option});
+        setSearchId(null); // null => waiting for server response
+        try {
+            const result = await doSearch({search: search ?? '', option}).unwrap();
+            setSearchId(result.searchId);
+        }
+        catch {}
     });
-    useEffect(() => {
-        if (!generateResult) return;
-        
-        (async () => {
-            const checkIsReady = async (): Promise<boolean> => {
-                try {
-                    await doVerify({ searchId: generateResult.searchId }).unwrap();
-                    return true;
-                }
-                catch {
-                    return false;
-                }
-            }
-            const scheduleCheckIsReady = async () => {
-                if (await checkIsReady()) {
-                    setIsPending(false);
-                    return;
-                } // if
-                
-                
-                setTimeout(scheduleCheckIsReady, 1000);
-            }
-            scheduleCheckIsReady();
-        })();
-    }, [generateResult]);
+    const handleCheckStatus = useEvent<CheckStatusCallback>(async () => {
+        try {
+            const result = await doVerify({ searchId: searchId ?? '' }).unwrap();
+            return result.imageUrls;
+        }
+        catch (error: any){
+            if (error.status === 409) return 'pending';
+            return Error('server is busy');
+        }
+    });
     
     
     
@@ -80,17 +67,11 @@ export default function Home() {
                 onSubmit={handleSubmit}
             />
             
-            {isError && <Basic theme='danger'>
-                Oops, something wrong!
-            </Basic>}
-            
-            {isLoading && <Busy theme='primary' size='lg' />}
-            
-            {isReady && <Masonry theme='primary'>
-                {imageResults.imageUrls.map((imageUrl, index) =>
-                    <img key={index} src={imageUrl} alt='' />
-                )}
-            </Masonry>}
+            <AwaitableGallery
+                theme='primary'
+                searchId={searchId}
+                checkStatusApi={handleCheckStatus}
+            />
         </main>
     )
 }

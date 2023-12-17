@@ -116,8 +116,8 @@ router
     const createdAt = searchIds.get(searchId);
     if (!createdAt) {
         return NextResponse.json({
-            error: 'Invalid parameter(s).',
-        }, { status: 400 }); // bad request
+            error: 'Invalid searchId',
+        }, { status: 404 }); // bad request
     } // if
     
     
