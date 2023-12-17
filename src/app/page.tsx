@@ -10,7 +10,7 @@ import {
 
 import styles from './page.module.css'
 import { SearchBox, SearchBoxSubmitEventHandler } from 'search-box-2'
-import { AwaitableGallery, CheckStatusCallback } from '@/components/AwaitableGallery'
+import { AwaitableGallery, CheckStatusCallback } from 'awaitable-gallery'
 
 
 
@@ -87,9 +87,15 @@ export default function Home() {
             />
             
             <AwaitableGallery
+                // variants:
                 theme='primary'
+                
+                
+                
+                // apis:
                 searchId={searchId}
                 checkStatusApi={handleCheckStatus}
+                poolInterval={1000} // re-check every 1 second
             />
         </main>
     )
