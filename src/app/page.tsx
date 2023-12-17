@@ -35,7 +35,7 @@ export default function Home() {
         (async () => {
             const checkIsReady = async (): Promise<boolean> => {
                 try {
-                    await doVerify({ sessionId: generateResult.sessionId }).unwrap();
+                    await doVerify({ searchId: generateResult.searchId }).unwrap();
                     return true;
                 }
                 catch {

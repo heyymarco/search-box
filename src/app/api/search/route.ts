@@ -24,12 +24,12 @@ export interface GenerateRequest
 }
 export interface GenerateResult
 {
-    sessionId: string
+    searchId: string
 }
 
 export interface VerifyRequest
 {
-    sessionId: string
+    searchId: string
 }
 export interface CreatedResult
 {
@@ -38,7 +38,7 @@ export interface CreatedResult
 
 
 // mocks:
-const sessions = new Map<string, Date>();
+const searchIds = new Map<string, Date>();
 const images = [
     '/lorem-img/building-800x500.jpg',
     '/lorem-img/flower-700x400.jpg',
@@ -87,11 +87,11 @@ router
     
     
     const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
-    const newSessionId = nanoid();
+    const newSearchId = nanoid();
     const createdAt = new Date();
-    sessions.set(newSessionId, createdAt);
+    searchIds.set(newSearchId, createdAt);
     const generateResult : GenerateResult = {
-        sessionId : newSessionId
+        searchId : newSearchId
     }
     return NextResponse.json(generateResult); // handled with success
 })
@@ -106,14 +106,14 @@ router
     
     
     const {
-        sessionId,
+        searchId,
     } = await req.json();
-    if (!sessionId || (typeof sessionId !== 'string')) {
+    if (!searchId || (typeof searchId !== 'string')) {
         return NextResponse.json({
             error: 'Invalid parameter(s).',
         }, { status: 400 }); // bad request
     } // if
-    const createdAt = sessions.get(sessionId);
+    const createdAt = searchIds.get(searchId);
     if (!createdAt) {
         return NextResponse.json({
             error: 'Invalid parameter(s).',
