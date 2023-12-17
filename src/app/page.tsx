@@ -10,15 +10,11 @@ import {
 
 import styles from './page.module.css'
 import { SearchBox, SearchBoxSubmitEventHandler } from 'search-box-2'
-import { useGenerateSearch, useVerifySearch } from '@/store/features/api/apiSlice'
-import { Basic, Busy, List, ListItem, Masonry } from '@reusable-ui/components'
 import { AwaitableGallery, CheckStatusCallback } from '@/components/AwaitableGallery'
 
 
 
 export default function Home() {
-    const [doSearch, {data: generateResult}] = useGenerateSearch();
-    const [doVerify] = useVerifySearch();
     const [searchId, setSearchId] = useState<string|null|undefined>(undefined); // undefined => not yet searched, null => waiting for server response
     
     
@@ -34,18 +30,33 @@ export default function Home() {
         
         setSearchId(null); // null => waiting for server response
         try {
-            const result = await doSearch({search: search ?? '', option}).unwrap();
+            const response = await fetch('/api/search', {
+                method : 'POST',
+                body : JSON.stringify({
+                    search : search ?? '',
+                    option : option,
+                })
+            });
+            if (!response.ok) return;
+            const result = await response.json();
             setSearchId(result.searchId);
         }
         catch {}
     });
     const handleCheckStatus = useEvent<CheckStatusCallback>(async () => {
         try {
-            const result = await doVerify({ searchId: searchId ?? '' }).unwrap();
+            const response = await fetch('/api/search', {
+                method : 'PATCH',
+                body : JSON.stringify({
+                    searchId : searchId ?? '',
+                })
+            });
+            if (response.status === 409) return 'pending';
+            if (!response.ok) return Error('server is busy');
+            const result = await response.json();
             return result.imageUrls;
         }
-        catch (error: any){
-            if (error.status === 409) return 'pending';
+        catch {
             return Error('server is busy');
         }
     });

@@ -12,7 +12,6 @@
     "@cssfn/core": "^3.2.0",
     "@cssfn/cssfn-dom": "^3.2.0",
     "@cssfn/cssfn-react": "^3.2.0",
-    "@reduxjs/toolkit": "^2.0.1",
     "@reusable-ui/components": "^6.5.2",
     "@reusable-ui/core": "^6.5.0",
     "nanoid": "^5.0.4",
@@ -20,7 +19,6 @@
     "next-connect": "^1.0.0",
     "react": "^18",
     "react-dom": "^18",
-    "react-redux": "^9.0.4",
     "search-box-2": "github:heyymarco/search-box-2"
   },
   "devDependencies": {
